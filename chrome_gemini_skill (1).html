@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chrome 問問 Gemini Skill 指令合輯</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Noto Serif TC & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+TC:wght@600;700;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Noto Serif TC"', 'serif'],
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+          },
+          colors: {
+            washi: {
+              50: '#FAF8F5',
+              100: '#F3EFEA',
+              200: '#E8E2D9',
+              300: '#D6CFC4',
+              700: '#6B635B',
+              800: '#4A443F',
+              900: '#2A2623',
+            },
+            accent: {
+              vermilion: '#C85A32',
+              matcha: '#6B7A59',
+              indigo: '#3B4B68'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #F7F5F0;
+      background-image: radial-gradient(#E8E2D9 0.75px, transparent 0.75px);
+      background-size: 16px 16px;
+      color: #2A2623;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .zakka-card {
+      background-color: #FFFFFF;
+      border: 1px solid #E8E2D9;
+      box-shadow: 0 4px 20px -2px rgba(42, 38, 35, 0.04);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .zakka-card:hover {
+      box-shadow: 0 8px 30px -4px rgba(42, 38, 35, 0.08);
+      border-color: #D6CFC4;
+    }
+
+    .washi-pill {
+      background-color: #F3EFEA;
+      border: 1px solid #E8E2D9;
+    }
+
+    /* 隱藏滾動條但保持滾動 */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* 彈窗動畫 */
+    .modal-backdrop {
+      background-color: rgba(42, 38, 35, 0.4);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-washi-200">
+
+  <!-- 頁面頂部 Header -->
+  <header class="sticky top-0 z-30 bg-[#F7F5F0]/90 backdrop-blur-md border-b border-washi-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
+      
+      <!-- 標題與作者 -->
+      <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-start">
+        <div class="flex items-center space-x-2">
+          <svg class="w-7 h-7 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.5C12.5 8 16 11.5 21.5 12C16 12.5 12.5 16 12 21.5C11.5 16 8 12.5 2.5 12C8 11.5 11.5 8 12 2.5Z" fill="#4F87D2"/>
+          </svg>
+          <h1 class="font-serif font-bold text-lg sm:text-xl text-washi-900 tracking-wide">
+            Chrome 問問 Gemini Skill 指令合輯
+          </h1>
+        </div>
+      </div>
+
+      <!-- 右側工具區：搜尋框 + 使用說明按鈕 -->
+      <div class="flex items-center gap-2.5 w-full sm:w-auto">
+        <!-- 搜尋框 -->
+        <div class="relative flex-1 sm:w-64">
+          <input 
+            type="text" 
+            id="searchInput"
+            placeholder="搜尋關鍵字或快捷鍵..." 
+            class="w-full pl-9 pr-4 py-1.5 text-sm bg-white border border-washi-200 rounded-xl focus:outline-none focus:border-washi-900 transition-colors placeholder:text-washi-700/50 shadow-sm"
+          />
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-washi-700/60 text-xs">🔍</span>
+        </div>
+
+        <!-- 三步驟說明彈窗按鈕 -->
+        <button 
+          id="openOnboardingBtn"
+          class="flex-shrink-0 px-3.5 py-1.5 text-xs sm:text-sm font-medium bg-washi-900 text-white rounded-xl hover:bg-washi-800 transition-all flex items-center gap-1.5 shadow-sm"
+        >
+          <span>💡</span>
+          <span class="hidden xs:inline">使用說明</span>
+          <span class="xs:hidden">說明</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- 主要內容區 -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 w-full space-y-6">
+
+    <!-- 分類頁籤 Category Tabs -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between border-b border-washi-200 pb-3 overflow-x-auto no-scrollbar gap-2">
+        <div class="flex items-center space-x-2 min-w-max" id="categoryTabs">
+          <button data-cat="all" class="cat-btn active px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 bg-washi-900 text-white hover:bg-washi-800 shadow-sm border border-washi-900">
+            ✨ 全部指令 (<span id="count-all">17</span>)
+          </button>
+          <button data-cat="research_teaching" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 bg-white/80 text-washi-800 hover:bg-white hover:text-washi-900 border border-washi-200">
+            🎓 研究教學 (<span id="count-research_teaching">10</span>)
+          </button>
+          <button data-cat="civil_admin" class="cat-btn px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 bg-white/80 text-washi-800 hover:bg-white hover:text-washi-900 border border-washi-200">
+            🏛️ 公務行政 (<span id="count-civil_admin">7</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- 指令卡片網格 (單欄橫向顯示) -->
+      <div id="cardsGrid" class="flex flex-col gap-5">
+        <!-- JS 動態渲染卡片 -->
+      </div>
+
+      <!-- 無搜尋結果提示 -->
+      <div id="noResults" class="hidden text-center py-16 bg-white/40 rounded-2xl border border-dashed border-washi-200">
+        <p class="text-4xl mb-3">🔍</p>
+        <p class="text-washi-800 font-medium">找不到符合條件的指令</p>
+        <p class="text-xs text-washi-800/60 mt-1">請嘗試變更搜尋關鍵字或選擇其他分類</p>
+      </div>
+    </section>
+
+    <!-- 資安與隱私提醒（置底於卡片下方） -->
+    <section class="bg-white/80 border border-washi-200 rounded-2xl p-4 sm:p-5 shadow-sm">
+      <div class="flex items-start gap-3">
+        <span class="text-lg flex-shrink-0 mt-0.5">🔒</span>
+        <div class="space-y-1">
+          <h4 class="font-bold text-sm sm:text-base text-washi-900">資安與隱私提醒</h4>
+          <p class="text-xs sm:text-sm text-washi-800/80 leading-relaxed">
+            開啟 Chrome Gemini 讀取網頁前，請確認該網頁不含密件、未公開個資或內部敏感系統資料。如涉及個人或特定單位資訊，請務必先進行「去識別化」處理。
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 頁尾 Footer -->
+  <footer class="border-t border-washi-200 bg-white/50 py-6 mt-6">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center space-y-2 text-xs sm:text-sm text-washi-800/70">
+      <p>⚠️ AI 產出內容僅供參考草稿，請務必依據實際狀況審閱修正後使用。</p>
+      <p class="text-washi-800/50 text-xs">善用 AI 賦能行政與教學 · 尊重智慧財產權 | Jamie Yen</p>
+    </div>
+  </footer>
+
+  <!-- 三步驟使用說明彈窗 -->
+  <div id="onboardingModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-washi-200 relative animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- 關閉按鈕 -->
+      <button id="closeOnboardingBtn" class="absolute top-4 right-4 text-washi-700 hover:text-washi-900 p-1.5 rounded-lg hover:bg-washi-100 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="space-y-5">
+        <div class="space-y-1">
+          <span class="text-xs font-semibold uppercase tracking-wider text-accent-vermilion font-mono">Quick Guide</span>
+          <h2 class="font-serif font-bold text-xl text-washi-900">三步驟：將指令存成 Gemini 技能</h2>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Step 1 -->
+          <div class="flex items-start gap-3.5 p-3 rounded-xl bg-washi-50 border border-washi-200/60">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-washi-900 text-white flex items-center justify-center font-bold text-xs font-mono">1</span>
+            <div class="space-y-0.5">
+              <h3 class="font-bold text-sm text-washi-900">開啟側邊欄</h3>
+              <p class="text-xs text-washi-800/80 leading-relaxed">在 Chrome 右上角點擊「問問 Gemini」圖示（或按下快捷鍵 <kbd class="px-1.5 py-0.5 bg-white rounded border border-washi-300 font-mono text-[10px]">Ctrl+G</kbd> / Mac 為 <kbd class="px-1.5 py-0.5 bg-white rounded border border-washi-300 font-mono text-[10px]">Cmd+G</kbd>）。</p>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="flex items-start gap-3.5 p-3 rounded-xl bg-washi-50 border border-washi-200/60">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-washi-900 text-white flex items-center justify-center font-bold text-xs font-mono">2</span>
+            <div class="space-y-0.5">
+              <h3 class="font-bold text-sm text-washi-900">新增技能</h3>
+              <p class="text-xs text-washi-800/80 leading-relaxed">在對話框輸入半形斜線「<kbd class="px-1.5 py-0.5 bg-white rounded border border-washi-300 font-mono text-[10px]">/</kbd>」叫出選單，點選「+ 新增技能」，填入名稱與複製的指令後儲存。</p>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="flex items-start gap-3.5 p-3 rounded-xl bg-washi-50 border border-washi-200/60">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-washi-900 text-white flex items-center justify-center font-bold text-xs font-mono">3</span>
+            <div class="space-y-0.5">
+              <h3 class="font-bold text-sm text-washi-900">當頁召喚</h3>
+              <p class="text-xs text-washi-800/80 leading-relaxed">瀏覽目標網頁時，輸入「<kbd class="px-1.5 py-0.5 bg-white rounded border border-washi-300 font-mono text-[10px]">/技能名稱</kbd>」，Gemini 會自動讀取當前網頁並執行任務！</p>
+            </div>
+          </div>
+        </div>
+
+        <button id="gotItBtn" class="w-full py-2.5 bg-washi-900 text-white font-medium rounded-xl hover:bg-washi-800 transition-colors text-sm shadow-sm">
+          我知道了
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast 複製成功提示 -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-washi-900 text-white px-4 py-2.5 rounded-xl shadow-lg border border-washi-800 flex items-center space-x-2 text-sm transition-all duration-300 transform translate-y-12 opacity-0 pointer-events-none">
+    <span>✅</span>
+    <span id="toastMsg">指令已複製至剪貼簿！</span>
+  </div>
+
+  <script>
+    // 完整資料庫
+    const skillsData = {
+      categories: [
+        {
+          id: "research_teaching",
+          name: "研究教學",
+          icon: "🎓",
+          description: "適用於論文剖析、課堂備課、學術導讀、程式解讀與學習單設計",
+          cards: [
+            {
+              id: "he-01",
+              title: "論文核心剖析",
+              shortcut: "/論文快讀",
+              applicable_sites: "arXiv、PubMed、IEEE Xplore、Nature 等期刊與預印本網頁",
+              prompt: "請讀取當前網頁的論文內容，整理出：1. 本研究解決的核心問題與動機；2. 研究方法與創新點；3. 主要實驗數據或研究結果；4. 本研究的局限性與未來可延伸方向。"
+            },
+            {
+              id: "he-02",
+              title: "學術導讀教案設計",
+              shortcut: "/學術導讀",
+              applicable_sites: "英文學術期刊頁面、學術新聞、研討會論文頁面",
+              prompt: "請讀取當前網頁的文章，為 [大學部/研究所] 學生改寫成導讀教材：標出 5 個關鍵專業術語並提供白話解釋，並設計 3 題能引導學生深度思考與批判討論的隨堂思考題。",
+              extension_tip: "複製產出的導讀文字與思考題，貼入 NotebookLM 可一鍵生成語音 Podcast 導讀；或貼入 Gamma.app 快速轉換為課堂導讀簡報。"
+            },
+            {
+              id: "he-03",
+              title: "文獻脈絡對比摘要",
+              shortcut: "/文獻對比",
+              applicable_sites: "Google Scholar 檢索頁面、綜述文章 (Review Paper) 網頁",
+              prompt: "請讀取當前網頁的內容，協助我比較其中提及的不同研究法或學派：整理成一份包含「研究者/年份、核心觀點、優缺點分析、適用情境」的結構化對照表。"
+            },
+            {
+              id: "he-04",
+              title: "程式碼與數據邏輯拆解",
+              shortcut: "/程式解讀",
+              applicable_sites: "GitHub Code View、Stack Overflow、Kaggle 文件頁面",
+              prompt: "請讀取當前網頁的程式碼與說明，用白話語氣逐段解釋其核心演算邏輯、輸入與輸出格式，並指出若要應用於 [特定研究主題] 時，需優先修改的關鍵參數與模組。"
+            },
+            {
+              id: "he-05",
+              title: "研究計畫徵案拆解",
+              shortcut: "/徵案拆解",
+              applicable_sites: "國科會、教育部或政府機關專題研究計畫徵案公告網頁",
+              prompt: "請讀取當前網頁的徵案辦法，整理出：1. 本計畫核心目標與主題；2. 申請資格與限制條件；3. 計畫書撰寫需涵蓋的關鍵項目與 KPI；4. 建議撰寫時可以切入的創新角度。",
+              extension_tip: "將拆解出的 KPI 與大綱文字複製，貼入 Google 簡報 或 Canva，即可作為 Lab Meeting 團隊研究計畫分工的簡報頁面。"
+            },
+            {
+              id: "k12-01",
+              title: "電子書課文圖解大綱",
+              shortcut: "/圖解課文",
+              applicable_sites: "康軒/翰林/南一線上電子書、數位教學網頁",
+              prompt: "請讀取當前網頁的課文或單元內容，為 [年級] 學生整理：1. 300 字核心白話摘要；2. 5 個重點關鍵詞及其生活化舉例；3. 設計一份視覺化心智圖的層次大綱，方便學生做筆記。",
+              extension_tip: "複製心智圖階層文字，可貼入 XMind 直接轉為樹狀圖，或貼入 Canva / Gamma 一鍵生成視覺化課堂講義簡報與學習單。"
+            },
+            {
+              id: "k12-02",
+              title: "時事新聞轉素養教材",
+              shortcut: "/時事備課",
+              applicable_sites: "國語日報網頁、各大新聞網、科普教育網站",
+              prompt: "請讀取當前網頁的新聞內容，將其改寫成適合 [年級] 的閱讀素養教材：包含 200 字易讀摘要、3 題單選題（附正確答案與誘答項解析），以及 1 題結合學生日常生活經驗的素養討論題。"
+            },
+            {
+              id: "k12-03",
+              title: "差異化教學課文簡化",
+              shortcut: "/差異改寫",
+              applicable_sites: "國語/社會/自然科線上課文、數位文章",
+              prompt: "請讀取當前網頁的文章，將其改寫成「基礎組」與「進階組」兩個版本的教材：基礎組採用短句與常用詞，縮短段落；進階組保留原文細節並補充延伸思考題。請明確標記適合的對象。"
+            },
+            {
+              id: "k12-04",
+              title: "教學影片隨堂互動問答",
+              shortcut: "/影片問答",
+              applicable_sites: "YouTube 教育頻道、均一教育平台、學習吧影片頁面",
+              prompt: "請擷取當前網頁影片的字幕或文字說明，設計 4 個「播放中可暫停」的互動檢核題（由淺到深，附時間點提示語），以及 1 段老師可以在課堂最後總結時使用的說明話術。",
+              extension_tip: "將產出的互動題目複製，貼入 Kahoot!、Quizizz 或 Wayground，可快速製作隨堂即時互動測驗遊戲。"
+            },
+            {
+              id: "k12-05",
+              title: "親師溝通溫和回覆草稿",
+              shortcut: "/親師回覆",
+              applicable_sites: "校務系統留言板、親師溝通紀錄網頁（請務必去識別化）",
+              prompt: "請讀取當前網頁上的家長意見，以老師的角度草擬一段溫和、同理且專業的回覆：1. 先感謝家長對孩子的關心；2. 客觀說明學校/課堂實際情況與法令依據；3. 提出 1~2 個親師可共同合作的具體改善方案。"
+            }
+          ]
+        },
+        {
+          id: "civil_admin",
+          name: "公務行政",
+          icon: "🏛️",
+          description: "適用於法規對照、陳情擬答、政策懶人包、簽呈擬定與研考摘要",
+          cards: [
+            {
+              id: "cs-01",
+              title: "法規草案重點差異對照",
+              shortcut: "/法規比對",
+              applicable_sites: "全國法規資料庫、主管法規查詢系統、草案預告網頁",
+              prompt: "請讀取當前網頁的法規預告或修訂草案，整理出：1. 本次修法的主軸與目的；2. 修正前與修正後的重點條文差異對照表；3. 本次修法對 [特定族群/業者/民眾] 可能產生的實質影響與應對建議。"
+            },
+            {
+              id: "cs-02",
+              title: "人民陳情案件溫和擬答",
+              shortcut: "/陳情擬答",
+              applicable_sites: "首長信箱管理系統、1999 陳情案件網頁（去識別化後）",
+              prompt: "請讀取當前網頁的民眾陳情訴求，草擬一份公務回覆函文草稿：語氣請保持客觀、具同理心且符合公文禮儀。明確說明處理情形、適用之法令依據，以及後續研議或辦理之時程。"
+            },
+            {
+              id: "cs-03",
+              title: "政策公告轉社群懶人包",
+              shortcut: "/政策白話",
+              applicable_sites: "機關新聞稿、政策發布頁面、政府公報網頁",
+              prompt: "請讀取當前網頁的政策公告內容，將艱深的公務用語轉化為一般大眾易讀的宣導文字：用 3 個重點說明「這政策是什麼、誰可以申請/受益、具體申請步驟」，並設計 2 組適合製作社群圖卡的醒目標題。",
+              extension_tip: "複製產出的「3 個重點與標題」，貼入 Canva 的「社群懶人包 / IG 多圖範本」，即可迅速完成機關社群宣導圖卡。"
+            },
+            {
+              id: "cs-04",
+              title: "會議紀錄轉辦理事項與簽呈",
+              shortcut: "/會議簽呈",
+              applicable_sites: "線上會議紀錄網頁、跨局處協調會紀錄",
+              prompt: "請讀取當前網頁的會議紀錄內容，協助整理：1. 本次會議之核心決議事項；2. 涉及本單位之「列管辦理事項與預計完成時程」；3. 幫我草擬一份陳核長官的簡要簽呈大綱（含主旨、說明、擬辦）。"
+            },
+            {
+              id: "cs-05",
+              title: "長篇研考報告摘要與 KPI",
+              shortcut: "/研考摘要",
+              applicable_sites: "委外研究報告 PDF 網頁、施政報告、審計報告頁面",
+              prompt: "請讀取當前網頁的長篇報告內容，為機關長官整理一份 1 頁內的極簡簡報：包含 1. 該研究/報告的核心結論；2. 關鍵績效指標（KPI）達成狀況；3. 提出 3 個後續施政或政策規劃之可行建議。",
+              extension_tip: "將整理出的簡報大綱複製，直接貼入 Gamma.app、Microsoft Copilot in PowerPoint 或 Google 簡報，能在幾秒鐘內自動生成向長官呈報的簡報草案。"
+            },
+            {
+              id: "cs-07",
+              title: "採購文件重點檢查",
+              shortcut: "/採購檢查",
+              applicable_sites: "政府電子採購網、招標文件、需求規格書、契約草案",
+              prompt: "請讀取當前網頁的採購文件，協助整理：1. 採購目的與主要工作內容；2. 廠商資格、重要投標條件及履約期限；3. 可能需要特別注意的風險或限制條款；4. 以承辦人角度列出招標前應再次確認的5項重點。"
+            },
+            {
+              id: "cs-09",
+              title: "新聞輿情分析與回應建議",
+              shortcut: "/輿情分析",
+              applicable_sites: "新聞網站、媒體報導、社群貼文、新聞稿",
+              prompt: "請讀取當前網頁內容，整理：1. 新聞事件重點；2. 民眾可能關注或質疑的議題；3. 對機關可能造成的影響；4. 草擬一份新聞回應重點或FAQ，語氣客觀、簡潔且符合政府機關對外說明方式。"
+            }
+          ]
+        }
+      ]
+    };
+
+    // 全域狀態
+    let currentCategory = 'all';
+    let searchQuery = '';
+
+    // DOM 元素
+    const cardsGrid = document.getElementById('cardsGrid');
+    const noResults = document.getElementById('noResults');
+    const searchInput = document.getElementById('searchInput');
+    const categoryTabs = document.getElementById('categoryTabs');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+
+    // 彈窗 DOM
+    const onboardingModal = document.getElementById('onboardingModal');
+    const openOnboardingBtn = document.getElementById('openOnboardingBtn');
+    const closeOnboardingBtn = document.getElementById('closeOnboardingBtn');
+    const gotItBtn = document.getElementById('gotItBtn');
+
+    // 初始化執行
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCards();
+      setupEventListeners();
+    });
+
+    // 取得所有卡片並加上分類標註
+    function getAllCards() {
+      let list = [];
+      skillsData.categories.forEach(cat => {
+        cat.cards.forEach(card => {
+          list.push({
+            ...card,
+            catId: cat.id,
+            catName: cat.name,
+            catIcon: cat.icon
+          });
+        });
+      });
+      return list;
+    }
+
+    // 渲染卡片 (橫向單欄排列)
+    function renderCards() {
+      const allCards = getAllCards();
+      const filtered = allCards.filter(card => {
+        const matchesCategory = (currentCategory === 'all') || (card.catId === currentCategory);
+        const query = searchQuery.toLowerCase().trim();
+        const matchesSearch = !query || 
+          card.title.toLowerCase().includes(query) ||
+          card.shortcut.toLowerCase().includes(query) ||
+          card.applicable_sites.toLowerCase().includes(query) ||
+          card.prompt.toLowerCase().includes(query) ||
+          card.catName.toLowerCase().includes(query);
+
+        return matchesCategory && matchesSearch;
+      });
+
+      cardsGrid.innerHTML = '';
+
+      if (filtered.length === 0) {
+        noResults.classList.remove('hidden');
+      } else {
+        noResults.classList.add('hidden');
+        filtered.forEach(card => {
+          const cardEl = document.createElement('div');
+          cardEl.className = 'zakka-card rounded-2xl p-5 sm:p-6 flex flex-col relative transition-all';
+          
+          // 清理 Prompt 前後多餘空白與換行，確保不會出現開頭大空格
+          const cleanPrompt = card.prompt ? card.prompt.trim() : '';
+
+          cardEl.innerHTML = `
+            <!-- 上方標題、類別與複製按鈕 -->
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3.5">
+              <div class="space-y-1.5">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="font-serif text-lg sm:text-xl font-bold text-washi-900 tracking-wide">
+                    ${card.title}
+                  </h3>
+                  <span class="washi-pill font-mono text-xs sm:text-sm font-semibold px-2.5 py-0.5 rounded-md text-washi-900">
+                    ${card.shortcut}
+                  </span>
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-washi-200/80 text-washi-800">
+                    <span>${card.catIcon}</span>
+                    <span>${card.catName}</span>
+                  </span>
+                </div>
+
+                <!-- 適用網站提示 -->
+                <p class="text-xs sm:text-sm text-washi-800/70 flex items-center gap-1.5 pt-0.5">
+                  <span class="text-stone-500">📍</span>
+                  <span class="font-medium text-washi-800/60">適用：</span>
+                  <span>${card.applicable_sites}</span>
+                </p>
+              </div>
+
+              <!-- 右上角複製按鈕 -->
+              <div class="flex-shrink-0 self-end sm:self-start">
+                <button 
+                  data-copy-id="${card.id}" 
+                  class="copy-quick-btn px-4 py-1.5 sm:py-2 rounded-xl bg-white border border-washi-200 text-washi-900 hover:bg-washi-900 hover:text-white transition-all flex items-center gap-1.5 font-medium shadow-sm text-xs sm:text-sm group"
+                >
+                  <svg class="w-4 h-4 text-stone-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <span>複製</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 提示詞 Prompt 內容框（字體加大，自動排版與適應） -->
+            <div class="bg-washi-50/90 rounded-xl p-4 sm:p-4.5 border border-washi-200/80 font-sans text-sm sm:text-base text-washi-900 leading-relaxed whitespace-pre-wrap select-all">${cleanPrompt}</div>
+
+            ${card.extension_tip ? `
+              <div class="mt-3 flex items-start gap-2 text-xs sm:text-sm text-stone-700 bg-stone-100/80 p-3 rounded-xl border border-stone-200/70">
+                <span class="flex-shrink-0 mt-0.5">💡</span>
+                <span class="leading-relaxed"><strong class="font-medium text-stone-900">延伸建議：</strong>${card.extension_tip}</span>
+              </div>
+            ` : ''}
+          `;
+
+          // 複製按鈕事件綁定
+          const copyBtn = cardEl.querySelector('.copy-quick-btn');
+          copyBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            copyToClipboard(cleanPrompt, `已複製「${card.title}」指令！`);
+          });
+
+          cardsGrid.appendChild(cardEl);
+        });
+      }
+    }
+
+    // 事件監聽與切換邏輯
+    function setupEventListeners() {
+      // 搜尋事件
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        renderCards();
+      });
+
+      // 分類頁籤切換
+      categoryTabs.addEventListener('click', (e) => {
+        const btn = e.target.closest('.cat-btn');
+        if (!btn) return;
+
+        // 更新 Active 樣式 (確保 active 選中時 Hover 保持高對比)
+        document.querySelectorAll('.cat-btn').forEach(b => {
+          b.classList.remove('active', 'bg-washi-900', 'text-white', 'hover:bg-washi-800', 'border-washi-900');
+          b.classList.add('bg-white/80', 'text-washi-800', 'hover:bg-white', 'hover:text-washi-900', 'border-washi-200');
+        });
+
+        btn.classList.remove('bg-white/80', 'text-washi-800', 'hover:bg-white', 'hover:text-washi-900', 'border-washi-200');
+        btn.classList.add('active', 'bg-washi-900', 'text-white', 'hover:bg-washi-800', 'border-washi-900');
+
+        currentCategory = btn.getAttribute('data-cat');
+        renderCards();
+      });
+
+      // 使用說明彈窗控制
+      openOnboardingBtn.addEventListener('click', () => {
+        onboardingModal.classList.remove('hidden');
+      });
+
+      closeOnboardingBtn.addEventListener('click', () => {
+        onboardingModal.classList.add('hidden');
+      });
+
+      gotItBtn.addEventListener('click', () => {
+        onboardingModal.classList.add('hidden');
+      });
+
+      // 點擊 Modal 背景關閉
+      onboardingModal.addEventListener('click', (e) => {
+        if (e.target === onboardingModal) {
+          onboardingModal.classList.add('hidden');
+        }
+      });
+    }
+
+    // 複製至剪貼簿（具備系統與舊版相容）
+    function copyToClipboard(text, message) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(message);
+        }).catch(() => {
+          fallbackCopy(text, message);
+        });
+      } else {
+        fallbackCopy(text, message);
+      }
+    }
+
+    function fallbackCopy(text, message) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast(message);
+      } catch (err) {
+        showToast('複製失敗，請手動複製');
+      }
+      document.body.removeChild(textArea);
+    }
+
+    // 顯示 Toast 提示
+    let toastTimer = null;
+    function showToast(msg) {
+      toastMsg.textContent = msg;
+      toast.classList.remove('translate-y-12', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-12', 'opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+  </script>
+</body>
+</html>
